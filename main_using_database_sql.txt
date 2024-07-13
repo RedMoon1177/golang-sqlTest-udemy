@@ -1,0 +1,64 @@
+package main
+
+import (
+	"database/sql"
+	"errors"
+	"fmt"
+
+	_ "github.com/go-sql-driver/mysql"
+)
+
+type Language struct {
+	Id   int
+	Name string
+}
+
+var dbClient *sql.DB
+
+const (
+	queryGetLangById = "SELECT id, name FROM language WHERE id=?;"
+)
+
+func init() {
+	var err error
+	dbClient, err = sql.Open("mysql", "root:root123@tcp(127.0.0.1:3306)/mydb")
+	if err != nil {
+		panic(err)
+	}
+
+	// Check if the database connection is successful
+	if err := dbClient.Ping(); err != nil {
+		panic(err)
+	}
+	fmt.Println("Successfully connected to the database!")
+}
+
+func GetLangById(id int) (*Language, error) {
+
+	rows, err := dbClient.Query(queryGetLangById, id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var language Language
+	for rows.Next() {
+		if err := rows.Scan(&language.Id, &language.Name); err != nil {
+			return nil, err
+		}
+		// fmt.Println("Language found:", language)
+		return &language, nil
+	}
+
+	return nil, errors.New("language not found")
+}
+
+func main() {
+	lang, err := GetLangById(1)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(lang.Id)
+	fmt.Println(lang.Name)
+}
