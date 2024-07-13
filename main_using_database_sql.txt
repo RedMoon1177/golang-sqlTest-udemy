@@ -21,7 +21,7 @@ const (
 
 func init() {
 	var err error
-	dbClient, err = sql.Open("mysql", "root:root123@tcp(127.0.0.1:3306)/mydb")
+	dbClient, err = sql.Open("mysql", "root:rootxxx@tcp(127.0.0.1:3306)/mydb")
 	if err != nil {
 		panic(err)
 	}
